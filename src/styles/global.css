@@ -1,0 +1,470 @@
+/* Base Global Resets */
+html,
+body,
+#__next {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
+    width: 100%;
+    font-family: system-ui, -apple-system, sans-serif;
+    box-sizing: border-box;
+}
+
+/* Auth Page Layout */
+.auth-page-container {
+    min-height: 100vh;
+    width: 100vw;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 40px 20px;
+    overflow-y: auto;
+}
+
+.auth-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 450px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.auth-title {
+    font-size: 28px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+    text-align: center;
+}
+
+.auth-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-top: 0;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Form Controls */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #444;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    background-color: #fff;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* Buttons & Links */
+.auth-btn {
+    width: 100%;
+    padding: 12px 24px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 10px;
+}
+
+.auth-btn:hover {
+    background: #5568d3;
+}
+
+.auth-btn:disabled {
+    background: #a5b4fc;
+    cursor: not-allowed;
+}
+
+.auth-footer-text {
+    margin-top: 25px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+}
+
+.auth-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+/* Error Message Banner */
+.error-banner {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #b91c1c;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* PAGE */
+
+.agreement-page {
+    min-height: 100vh;
+    background: #f5f7fa;
+    font-family: system-ui, -apple-system, sans-serif;
+    padding: 40px 20px;
+}
+
+.agreement-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.agreement-loading {
+    padding: 40px;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* HEADER */
+
+.agreement-header {
+    margin-bottom: 40px;
+}
+
+.agreement-header h1 {
+    margin: 0 0 10px;
+    font-size: 32px;
+    color: #333;
+}
+
+.agreement-header p {
+    margin: 0;
+    color: #666;
+    font-size: 16px;
+}
+
+.back-link-btn {
+    background: none;
+    border: none;
+    color: #667eea;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.back-link-btn:hover {
+    text-decoration: underline;
+}
+
+/* TEMPLATE GRID */
+
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.template-card {
+    background: #fff;
+    border: 2px solid #e0e6ed;
+    border-radius: 8px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.template-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+}
+
+.template-card h3 {
+    margin: 0 0 10px;
+    color: #333;
+    font-size: 18px;
+}
+
+.template-card p {
+    margin: 0 0 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+.template-price {
+    padding: 12px;
+    background: #f5f7fa;
+    border-radius: 6px;
+    color: #667eea;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* FORM */
+
+.agreement-form {
+    background: #fff;
+    border-radius: 8px;
+    padding: 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.template-header {
+    margin-bottom: 30px;
+}
+
+.template-header h2 {
+    margin: 0 0 20px;
+    color: #333;
+    font-size: 24px;
+}
+
+/* FIELDSETS */
+
+.form-section {
+    border: none;
+    padding: 0 0 30px;
+    border-bottom: 2px solid #e0e6ed;
+    margin-bottom: 30px;
+}
+
+.form-section.no-border {
+    border-bottom: none;
+}
+
+.form-section legend {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* GRID */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+/* LABELS */
+
+.form-section label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* INPUTS */
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e6ed;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.textarea-lg {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* BUTTONS */
+
+.primary-btn,
+.secondary-btn {
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.primary-btn {
+    background: #667eea;
+    color: #fff;
+    padding: 12px 32px;
+}
+
+.primary-btn:hover:not(:disabled) {
+    background: #5867d8;
+}
+
+.primary-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.secondary-btn {
+    background: #f0f0f0;
+    color: #333;
+    padding: 12px 24px;
+}
+
+.secondary-btn:hover {
+    background: #e5e5e5;
+}
+
+/* ACTIONS */
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Isolated Modal Base Configuration overlays */
+.crm-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(2px);
+}
+
+.crm-modal-wrapper {
+    background: #ffffff;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 750px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    animation: crmModalFadeIn 0.25s ease-out;
+}
+
+.crm-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.crm-modal-header h2 {
+    margin: 0;
+    font-size: 1.45rem;
+    color: #1f2937;
+}
+
+.crm-modal-close-icon {
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.15s ease;
+}
+
+.crm-modal-close-icon:hover {
+    color: #374151;
+}
+
+.crm-modal-body {
+    padding: 24px;
+}
+
+.crm-modal-client-meta {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    color: #4b5563;
+    background-color: #f3f4f6;
+    padding: 10px 14px;
+    border-radius: 6px;
+}
+
+@keyframes crmModalFadeIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+    .agreement-form {
+        padding: 24px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .agreement-header h1 {
+        font-size: 28px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        width: 100%;
+    }
+}
