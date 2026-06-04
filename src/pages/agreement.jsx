@@ -10,7 +10,7 @@ const Agreement = () => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
-    // Modal Control States
+    // Modal Control States (Kept active for when you migrate the modal code)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [activeAgreementId, setActiveAgreementId] = useState(null);
 
@@ -104,7 +104,6 @@ const Agreement = () => {
         setSubmitting(true);
 
         try {
-            // FIXED: Changed 'api.post' to use your verified 'TemplateApi' infrastructure setup
             const res = await AgreementApi.UpdateAgreementDetails(selectedTemplate._id, {
                 templateId: selectedTemplate._id,
                 ...formData,
@@ -113,9 +112,20 @@ const Agreement = () => {
             const data = res.data;
             const targetId = data.agreementId || data._id;
 
-            // Instead of shifting pages completely, open the internal modal popup
+            /* ==========================================================================
+               MODAL POPUP ACTIONS (COMMENTED OUT AS REQUESTED)
+               ==========================================================================
             setActiveAgreementId(targetId);
             setIsEditModalOpen(true);
+            */
+
+            /* ==========================================================================
+               REDIRECT TO AGREEMENT LISTING PAGE 
+               (REMOVE THE COMMENTS BELOW ONCE YOUR ROUTE/PAGE IS CREATED)
+               ========================================================================== */
+            // alert('Agreement created successfully! Redirecting...');
+            // navigate('/agreement-listing'); 
+
         } catch (error) {
             alert(
                 error.response?.data?.error ||
@@ -139,12 +149,6 @@ const Agreement = () => {
             <div className="agreement-container">
 
                 <div className="agreement-header">
-                    <Link to="/dashboard">
-                        <button className="back-link-btn">
-                            ← Back to Dashboard
-                        </button>
-                    </Link>
-
                     <h1>Create Agreement</h1>
 
                     <p>
@@ -296,19 +300,22 @@ const Agreement = () => {
                 )}
             </div>
 
-            {/* CALLING MODAL IN-PLACE DIRECTLY AS COMPONENT */}
+            {/* ==========================================================================
+               CALLING MODAL IN-PLACE DIRECTLY AS COMPONENT (COMMENTED OUT FOR NOW)
+               ==========================================================================
             <EditAgreementModal
                 isOpen={isEditModalOpen}
                 id={activeAgreementId}
                 onClose={() => setIsEditModalOpen(false)}
             />
+            */}
         </div>
     );
 };
 
 
 /* ==========================================================================
-   INTERNAL INJECTED COMPONENT: EditAgreementModal
+   INTERNAL INJECTED COMPONENT: EditAgreementModal (Preserved for your new page)
    ========================================================================== */
 function EditAgreementModal({ isOpen, onClose, id }) {
     const navigate = useNavigate();
@@ -345,7 +352,6 @@ function EditAgreementModal({ isOpen, onClose, id }) {
         fetchAgreementDetails();
     }, [id, isOpen]);
 
-    // KEYBOARD LOCK: Completely prevents keyboard escape actions from shutting down window
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (isOpen && e.key === 'Escape') {
@@ -390,7 +396,6 @@ function EditAgreementModal({ isOpen, onClose, id }) {
 
     return (
         <div className="crm-modal-overlay">
-            {/* NO onClick event parameter maps here, preserving strict outer box clicking freeze lock constraints */}
             <div className="crm-modal-wrapper">
 
                 <div className="crm-modal-header">
