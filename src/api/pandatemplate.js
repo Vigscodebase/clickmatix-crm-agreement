@@ -3,11 +3,15 @@ import { axios } from "./axios/axiosinstance"
 class PandaAgreementApi {
 
     static ListTemplates = () => {
-        return axios.get(`pandadoc/template-listing`);
+        return axios.get(`pandatemp/template-listing`);
     };
 
     static CreateTemplate = (templateData) => {
-        return axios.post(`pandadoc/create-template`, templateData);
+        return axios.post(`pandatemp/create-template`, templateData);
+    };
+
+    static GetEditingSession = (templateId) => {
+        return axios.post(`pandatemp/create-template-edit`, { template_id: templateId });
     };
 
 }
