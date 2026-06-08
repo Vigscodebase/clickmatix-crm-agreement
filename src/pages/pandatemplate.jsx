@@ -7,24 +7,16 @@ import { Editor } from 'pandadoc-editor';
 const PandaTemplate = () => {
     const navigate = useNavigate();
 
-    // View control states: 'selection', 'existing', 'system-gallery', 'new', or 'editor-canvas'
+    // View control states: 'selection', 'existing', or 'editor-canvas'
     const [viewMode, setViewMode] = useState('selection');
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
     const [activeEditorToken, setActiveEditorToken] = useState('');
     const [activeTemplateName, setActiveTemplateName] = useState('');
     const [activeTemplateId, setActiveTemplateId] = useState('');
 
     // Dropdown UI Toggles
     const [showMoreMenu, setShowMoreMenu] = useState(false);
-
-    // Form state for creating a new template
-    const [newTemplateData, setNewTemplateData] = useState({
-        name: '',
-        description: '',
-        sourcePresetId: ''
-    });
 
     // Safely initialize the interactive editing session canvas when view updates
     useEffect(() => {
@@ -72,7 +64,7 @@ const PandaTemplate = () => {
         }
     };
 
-    // Shared execution hub for launching editing frames safely
+    // Shared execution hub for launching editing frames safely from the list view
     const handleLaunchEditorCanvas = async (templateId, templateName) => {
         setLoading(true);
         try {
@@ -98,37 +90,39 @@ const PandaTemplate = () => {
         }
     };
 
-    const handleFormChange = (e) => {
-        const { name, value } = e.target;
-        setNewTemplateData(prev => ({ ...prev, [name]: value }));
-    };
+    // INSTANT CREATION FLOW (Mimics native PandaDoc behavior)
+    // Completely bypasses the configuration form, provisions in background, and loads canvas.
+    const handleInstantCreateTemplate = async () => {
+        setLoading(true);
 
-    // Handles form submission, provisions the layout model, and launches the editor canvas
-    const handleCreateTemplate = async (e) => {
-        e.preventDefault();
-        if (!newTemplateData.name) {
-            alert('Please enter a template name.');
-            return;
-        }
+        // Generate a standard placeholder name just like PandaDoc does
+        const placeholderName = `Untitled Template - ${new Date().toLocaleDateString()}`;
+        const templatePayload = {
+            name: placeholderName,
+            description: "Instantly deployed via Workspace Hub"
+        };
 
-        setSubmitting(true);
         try {
-            const res = await PandaTemplateApi.CreateTemplate(newTemplateData);
-            alert('Template provisioned successfully! Opening design workspace layout canvas...');
+            const res = await PandaTemplateApi.CreateTemplate(templatePayload);
 
-            // Resolves the newly created ID across various nested payload structures
+            // Extract the newly generated layout details from your backend unified payload response
             const targetId = res.data?.template?.id || res.data?.id || res.data?.results?.id;
+            const targetToken = res.data?.token;
 
-            if (targetId) {
-                // IMMEDIATELY LAUNCH THE CANVAS SESSION HUB USING THE SAME EDITING FUNCTION
-                await handleLaunchEditorCanvas(targetId, newTemplateData.name);
+            if (targetId && targetToken) {
+                // Instantly inject the active tokens and step directly onto the Canvas Editor stage
+                setActiveTemplateName(placeholderName);
+                setActiveTemplateId(targetId);
+                setActiveEditorToken(targetToken);
+                setViewMode('editor-canvas');
             } else {
-                fetchPandaTemplates();
+                throw new Error("API responded without creating a proper identity or session token wrapper.");
             }
         } catch (error) {
-            alert(`Failed to create PandaDoc template: ${error.message}`);
+            alert(`Failed to instantly build testing blueprint layout: ${error.message}`);
+            setViewMode('selection');
         } finally {
-            setSubmitting(false);
+            setLoading(false);
         }
     };
 
@@ -146,15 +140,26 @@ const PandaTemplate = () => {
         }
     };
 
-    const handleDeleteTemplateDirectly = () => {
-        if (!window.confirm("Are you sure you want to permanently delete this template layout blueprint?")) return;
-        alert(`Purging template schema ID reference: [${activeTemplateId}]`);
-        setViewMode('existing');
-        fetchPandaTemplates();
+    const handleDeleteTemplateDirectly = async () => {
+        if (!window.confirm("Are you sure you want to permanently delete this template layout blueprint? This will completely purge it from your workspace environment.")) return;
+
+        setLoading(true);
+        setShowMoreMenu(false);
+        try {
+            await PandaTemplateApi.DeleteTemplate(activeTemplateId);
+            alert(`Successfully purged layout workspace blueprint: [${activeTemplateId}]`);
+
+            // Return back to the selection dashboard menu cleanly
+            setViewMode('selection');
+        } catch (error) {
+            alert(`Failed to delete template workspace blueprint: ${error.message}`);
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (loading) {
-        return <div className="agreement-loading">Loading configuration workspace...</div>;
+        return <div className="agreement-loading">Processing your workspace environment...</div>;
     }
 
     return (
@@ -167,7 +172,6 @@ const PandaTemplate = () => {
                         <p>
                             {viewMode === 'selection' && 'Choose an option to manage your assets'}
                             {viewMode === 'existing' && 'Active Custom Account Workspace Layouts'}
-                            {viewMode === 'new' && 'Provision a new custom workspace layout template'}
                         </p>
                     </div>
                 )}
@@ -175,12 +179,12 @@ const PandaTemplate = () => {
                 {/* VIEW 1: MAIN NAVIGATION MENU */}
                 {viewMode === 'selection' && (
                     <div className="template-grid">
-                        <div className="template-card" onClick={() => setViewMode('new')} style={{ cursor: 'pointer' }}>
+                        {/* FIXED: This now immediately executes background generation and goes straight to the canvas */}
+                        <div className="template-card" onClick={handleInstantCreateTemplate} style={{ cursor: 'pointer' }}>
                             <h3>➕ Create New Template</h3>
-                            <p>Generate a clean template configuration inside your Clickmatix workspace.</p>
+                            <p>Instantly generate and open a brand new layout workspace context.</p>
                         </div>
 
-                        {/* FIXED: This now correctly calls fetchPandaTemplates instead of loading a blank new form */}
                         <div className="template-card interactive-card" onClick={fetchPandaTemplates} style={{ cursor: 'pointer' }}>
                             <h3>📋 View Existing Workspace Templates</h3>
                             <p>Fetch, browse, and natively modify your account layout models in real time.</p>
@@ -222,57 +226,7 @@ const PandaTemplate = () => {
                     </>
                 )}
 
-                {/* VIEW 3: PROVISION NEW TEMPLATE FORM */}
-                {viewMode === 'new' && (
-                    <form onSubmit={handleCreateTemplate} className="agreement-form">
-                        <div className="template-header">
-                            <h2>Configure New Deployment</h2>
-                            <button type="button" className="secondary-btn" onClick={() => setViewMode('selection')}>
-                                Back
-                            </button>
-                        </div>
-
-                        <fieldset className="form-section">
-                            <legend>Workspace Target Parameters</legend>
-                            <div className="form-grid">
-                                <div className="full-width">
-                                    <label>Template Layout Name *</label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={newTemplateData.name}
-                                        onChange={handleFormChange}
-                                        required
-                                        className="form-control"
-                                        placeholder="e.g., Enterprise Service SLA"
-                                    />
-                                </div>
-
-                                <div className="full-width">
-                                    <label>Description/Metadata Notes</label>
-                                    <textarea
-                                        name="description"
-                                        value={newTemplateData.description}
-                                        onChange={handleFormChange}
-                                        className="form-control textarea-lg"
-                                        rows={4}
-                                    />
-                                </div>
-                            </div>
-                        </fieldset>
-
-                        <div className="form-actions">
-                            <button type="button" className="secondary-btn" onClick={() => setViewMode('selection')}>
-                                Cancel
-                            </button>
-                            <button type="submit" disabled={submitting} className="primary-btn">
-                                {submitting ? 'Deploying into PandaDoc...' : 'Confirm & Deploy'}
-                            </button>
-                        </div>
-                    </form>
-                )}
-
-                {/* VIEW 4: FULL-BLEED UNIFIED WORKSPACE STUDIO */}
+                {/* VIEW 3: FULL-BLEED UNIFIED WORKSPACE STUDIO */}
                 {viewMode === 'editor-canvas' && (
                     <div className="editor-canvas-workspace full-height-flex">
 
@@ -284,7 +238,7 @@ const PandaTemplate = () => {
                                 <button
                                     type="button"
                                     className="pd-exit-arrow-btn"
-                                    onClick={() => { setViewMode('existing'); fetchPandaTemplates(); }}
+                                    onClick={() => { setViewMode('selection'); }}
                                 >
                                     ←
                                 </button>
@@ -309,11 +263,11 @@ const PandaTemplate = () => {
 
                             {/* Right Side Workflow Core Anchors */}
                             <div className="pd-header-right">
-                                <div className="pd-avatar-circle">CL</div>
+                                {/* <div className="pd-avatar-circle">CL</div> */}
 
-                                <button type="button" className="pd-btn-utility btn-manage-gray">
+                                {/* <button type="button" className="pd-btn-utility btn-manage-gray">
                                     <span className="pd-icon-spacing">👥</span> Manage
-                                </button>
+                                </button> */}
 
                                 <button
                                     type="button"
@@ -325,7 +279,7 @@ const PandaTemplate = () => {
 
                                 <div className="pd-vertical-separator" />
 
-                                <button type="button" className="pd-icon-action-btn" title="Comments/Suggestions">💬</button>
+                                {/* <button type="button" className="pd-icon-action-btn" title="Comments/Suggestions">💬</button> */}
 
                                 {/* Dropdown Option List Anchoring Box */}
                                 <div className="pd-dropdown-anchor-wrapper">
@@ -343,6 +297,7 @@ const PandaTemplate = () => {
                                             <div className="pd-dropdown-item item-disabled">⚙️ Settings</div>
                                             <div className="pd-dropdown-item item-disabled">🔄 Duplicate Template</div>
                                             <div className="pd-dropdown-divider" />
+                                            {/* Destructive Delete Action Hooked to API */}
                                             <div className="pd-dropdown-item item-clickable text-danger" onClick={handleDeleteTemplateDirectly}>🗑️ Delete Template</div>
                                         </div>
                                     )}
@@ -354,7 +309,7 @@ const PandaTemplate = () => {
                             </div>
                         </div>
 
-                        {/* High Performance Canvas Frame Container utilizing the block layout fix */}
+                        {/* Canvas Frame Container */}
                         <div id="panda-editor-canvas-container" className="flex-canvas-fill" />
                     </div>
                 )}

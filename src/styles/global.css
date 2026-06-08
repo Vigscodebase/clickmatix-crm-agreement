@@ -10,115 +10,197 @@ body,
     box-sizing: border-box;
 }
 
-/* Auth Page Layout */
+/* =========================================================================
+   REFINED AUTHENTICATION STYLES (Studio Integrated)
+   ========================================================================= */
+
 .auth-page-container {
     min-height: 100vh;
     width: 100vw;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-color: #f8fafc;
+    /* Crisp Slate tint from the studio body viewport */
+    background-image:
+        radial-gradient(at 0% 0%, rgba(226, 232, 240, 0.4) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(203, 213, 225, 0.4) 0px, transparent 50%);
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
     padding: 40px 20px;
-    overflow-y: auto;
 }
 
 .auth-card {
-    background: white;
+    background: #ffffff;
     padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 450px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    /* Matches dashboard grid lines */
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+    max-width: 480px;
     width: 100%;
     box-sizing: border-box;
+    animation: crmModalFadeIn 0.2s ease-out;
+}
+
+/* Brand Identifier Accent Header */
+.auth-header-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.auth-brand-icon {
+    font-size: 22px;
+}
+
+.auth-brand-badge {
+    background-color: #0f172a;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.75px;
 }
 
 .auth-title {
-    font-size: 28px;
+    font-size: 24px;
+    font-weight: 700;
     margin-top: 0;
-    margin-bottom: 10px;
-    color: #333;
+    margin-bottom: 6px;
+    color: #0f172a;
+    /* Deep Slate typography */
     text-align: center;
 }
 
 .auth-subtitle {
     font-size: 14px;
-    color: #666;
+    color: #64748b;
+    /* Slate secondary description color */
     margin-top: 0;
-    margin-bottom: 30px;
+    margin-bottom: 32px;
     text-align: center;
 }
 
-/* Form Controls */
+.auth-form-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Form Controls and Grid Hooks */
+.form-grid-dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 480px) {
+    .form-grid-dual {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 0;
+    /* Handled cleanly by auth-form-layout gap */
     text-align: left;
 }
 
 .form-label {
     display: block;
-    margin-bottom: 8px;
-    font-size: 14px;
+    margin-bottom: 6px;
+    font-size: 13px;
     font-weight: 600;
-    color: #444;
+    color: #475569;
+    /* Table header-grade text clarity */
 }
 
 .form-input,
 .form-select {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #e0e6ed;
-    border-radius: 8px;
-    font-size: 15px;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #0f172a;
     box-sizing: border-box;
-    transition: border-color 0.2s;
+    transition: all 0.15s ease;
     background-color: #fff;
+    font-family: inherit;
+}
+
+.form-input::placeholder {
+    color: #94a3b8;
 }
 
 .form-input:focus,
 .form-select:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #3b82f6;
+    /* Studio Dashboard Blue Focus Anchor */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }
 
-/* Buttons & Links */
-.auth-btn {
+/* Primary Action Execution Buttons */
+.auth-btn-primary {
     width: 100%;
-    padding: 12px 24px;
-    background: #667eea;
-    color: white;
+    padding: 11px 24px;
+    background-color: #3b82f6;
+    /* Matches studio .btn-open-studio primary base */
+    color: #ffffff;
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
+    border-radius: 6px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease;
-    margin-top: 10px;
+    transition: background-color 0.1s ease;
+    margin-top: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.auth-btn:hover {
-    background: #5568d3;
+.auth-btn-primary:hover:not(:disabled) {
+    background-color: #2563eb;
 }
 
-.auth-btn:disabled {
-    background: #a5b4fc;
+.auth-btn-primary:disabled {
+    background-color: #93c5fd;
     cursor: not-allowed;
 }
 
+/* Clean Context Status Banners */
+.error-banner {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: #b91c1c;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    animation: crmModalFadeIn 0.2s ease-out;
+}
+
 .auth-footer-text {
-    margin-top: 25px;
-    font-size: 14px;
-    color: #666;
+    margin-top: 32px;
+    font-size: 13px;
+    color: #64748b;
     text-align: center;
 }
 
 .auth-link {
-    color: #667eea;
+    color: #3b82f6;
     text-decoration: none;
     font-weight: 600;
+    transition: color 0.1s ease;
 }
 
 .auth-link:hover {
+    color: #2563eb;
     text-decoration: underline;
 }
 
@@ -432,6 +514,7 @@ body,
         transform: scale(0.95);
         opacity: 0;
     }
+
     to {
         transform: scale(1);
         opacity: 1;
@@ -769,6 +852,7 @@ body,
     background: #3b82f6;
     color: #ffffff;
 }
+
 .btn-open-studio:hover {
     background-color: #2563eb;
 }
@@ -777,6 +861,7 @@ body,
     background: #10b981;
     color: #ffffff;
 }
+
 .btn-send-studio:hover {
     background-color: #059669;
 }
@@ -785,6 +870,7 @@ body,
     background: #ef4444;
     color: #ffffff;
 }
+
 .btn-delete-studio:hover {
     background-color: #dc2626;
 }
@@ -817,6 +903,7 @@ body,
     padding: 0 8px;
     transition: color 0.1s ease;
 }
+
 .btn-back-arrow:hover {
     color: #0f172a;
 }
@@ -860,6 +947,7 @@ body,
     cursor: pointer;
     transition: background-color 0.1s ease;
 }
+
 .btn-close-progress:hover {
     background-color: #475569;
 }
@@ -963,6 +1051,7 @@ body,
     border-radius: 4px;
     font-weight: bold;
 }
+
 .pd-exit-arrow-btn:hover {
     background-color: #f1f5f9;
     color: #0f172a;
@@ -1011,10 +1100,22 @@ body,
     border-radius: 50%;
     display: inline-block;
 }
-.pd-status-dot.dot-draft { background-color: #cbd5e1; }
-.pd-status-dot.dot-sent { background-color: #3b82f6; }
-.pd-status-dot.dot-viewed { background-color: #f59e0b; }
-.pd-status-dot.dot-completed { background-color: #10b981; }
+
+.pd-status-dot.dot-draft {
+    background-color: #cbd5e1;
+}
+
+.pd-status-dot.dot-sent {
+    background-color: #3b82f6;
+}
+
+.pd-status-dot.dot-viewed {
+    background-color: #f59e0b;
+}
+
+.pd-status-dot.dot-completed {
+    background-color: #10b981;
+}
 
 .text-capitalize {
     text-transform: capitalize;
@@ -1029,7 +1130,7 @@ body,
     color: #64748b;
 }
 
-.pd-folder-icon, 
+.pd-folder-icon,
 .pd-checkmark-icon {
     font-size: 11px;
     color: #94a3b8;
@@ -1054,6 +1155,7 @@ body,
     align-items: center;
     border: 1px solid #fed7aa;
 }
+
 .pd-avatar-circle.circle-mini {
     width: 22px;
     height: 22px;
@@ -1081,6 +1183,7 @@ body,
     border: 1px solid #e2e8f0;
     color: #475569;
 }
+
 .btn-manage-gray:hover {
     background-color: #e2e8f0;
 }
@@ -1090,6 +1193,7 @@ body,
     border: 1px solid #0f766e;
     color: #0f766e;
 }
+
 .btn-invite-white:hover {
     background-color: #f0fdfa;
 }
@@ -1105,8 +1209,9 @@ body,
     cursor: pointer;
     height: 32px;
     box-sizing: border-box;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
+
 .pd-btn-finish-yellow:hover {
     background-color: #eab308;
 }
@@ -1130,6 +1235,7 @@ body,
     align-items: center;
     justify-content: center;
 }
+
 .pd-icon-action-btn:hover {
     background-color: #f1f5f9;
     color: #0f172a;
@@ -1144,6 +1250,7 @@ body,
     font-size: 13px;
     font-weight: 500;
 }
+
 .pd-help-link-zone:hover .pd-help-text {
     text-decoration: underline;
 }
@@ -1196,14 +1303,17 @@ body,
     font-weight: 500;
     user-select: none;
 }
+
 .pd-dropdown-item.item-clickable {
     cursor: pointer;
     transition: background-color 0.1s;
 }
+
 .pd-dropdown-item.item-clickable:hover {
     background-color: #f8fafc;
     color: #0f172a;
 }
+
 .pd-dropdown-item.item-disabled {
     color: #94a3b8;
     cursor: not-allowed;
@@ -1233,6 +1343,7 @@ body,
 .pd-dropdown-item.text-danger {
     color: #ef4444;
 }
+
 .pd-dropdown-item.text-danger:hover {
     background-color: #fef2f2;
     color: #dc2626;
@@ -1265,7 +1376,7 @@ body,
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .native-pandadoc-header {
         overflow-x: auto;
         gap: 16px;

@@ -391,33 +391,33 @@ const PandaDocument = () => {
                         </div>
 
                         {/* Target Canvas Core Layout Wrapper Panels */}
-                        <div className="pd-studio-body-viewport">
-                            {/* Render interactive SDK container frame only when not overridden by preview status */}
-                            <div
-                                id="panda-document-canvas-container"
-                                className={`flex-canvas-fill ${isPreviewMode ? 'hide-editor-canvas-view' : ''}`}
-                            />
+                        {/* <div className="pd-studio-body-viewport"> */}
+                        {/* Render interactive SDK container frame only when not overridden by preview status */}
+                        <div
+                            id="panda-document-canvas-container"
+                            className={`flex-canvas-fill ${isPreviewMode ? 'hide-editor-canvas-view' : ''}`}
+                        />
 
-                            {/* HIGH FIDELITY ISOLATED CLIENT SIGNING SIMULATION PREVIEW FRAME */}
-                            {isPreviewMode && (
-                                <div className="pd-recipient-preview-overlay">
-                                    <div className="preview-sticky-alert">
-                                        <span>👀 You are viewing this agreement in recipient simulation mode. Toolbars, layouts, and field assignment grids have been safely isolated.</span>
-                                    </div>
-                                    <div className="preview-document-scroll-mock">
-                                        <div className="preview-rendered-page-sheet">
-                                            <h1 className="preview-sheet-title">{activeDocName}</h1>
-                                            <div className="preview-divider-line" />
-                                            <p className="preview-body-p">This section replicates the visual appearance of your document framework for end clients.</p>
-                                            <div className="preview-mock-field-box">
-                                                <span className="field-box-label">Signature Field (Client Signer)</span>
-                                                <div className="field-box-stub">🖊️ Click to sign framework assignment</div>
-                                            </div>
+                        {/* HIGH FIDELITY ISOLATED CLIENT SIGNING SIMULATION PREVIEW FRAME */}
+                        {isPreviewMode && (
+                            <div className="pd-recipient-preview-overlay">
+                                <div className="preview-sticky-alert">
+                                    <span>👀 You are viewing this agreement in recipient simulation mode. Toolbars, layouts, and field assignment grids have been safely isolated.</span>
+                                </div>
+                                <div className="preview-document-scroll-mock">
+                                    <div className="preview-rendered-page-sheet">
+                                        <h1 className="preview-sheet-title">{activeDocName}</h1>
+                                        <div className="preview-divider-line" />
+                                        <p className="preview-body-p">This section replicates the visual appearance of your document framework for end clients.</p>
+                                        <div className="preview-mock-field-box">
+                                            <span className="field-box-label">Signature Field (Client Signer)</span>
+                                            <div className="field-box-stub">🖊️ Click to sign framework assignment</div>
                                         </div>
                                     </div>
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
+                        {/* </div> */}
 
                     </div>
                 )}

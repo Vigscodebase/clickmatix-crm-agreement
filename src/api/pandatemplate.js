@@ -14,6 +14,10 @@ class PandaAgreementApi {
         return axios.post(`pandatemp/create-template-edit`, { template_id: templateId });
     };
 
+    static DeleteTemplate = (templateId) => {
+        return axios.delete(`pandatemp/delete-template/${templateId}`);
+    };
+
 }
 
 export default PandaAgreementApi;
