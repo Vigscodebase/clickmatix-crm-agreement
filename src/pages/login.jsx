@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from "react-router-dom";
 import AuthApi from '../api/auth';
 import RoleApi from '../api/role';
+import { useAuth } from '../context/AuthContext'; // Import the authentication hook
 
 const Login = () => {
     const navigate = useNavigate();
+    const { token, updateToken } = useAuth(); // Destructure the reactive context states and setters
 
     // Input States
     const [email, setEmail] = useState('');
@@ -17,13 +19,12 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [fetchingRoles, setFetchingRoles] = useState(true);
 
-    // Guard Clause: Prevent authenticated users from accessing login page
+    // Guard Clause: Prevent already authenticated users from accessing login page using reactive token state
     useEffect(() => {
-        const token = localStorage.getItem('token');
         if (token) {
-            navigate('/panda-create-template');
+            navigate('/panda-create-template', { replace: true });
         }
-    }, [navigate]);
+    }, [token, navigate]);
 
     // Fetch predefined database roles dynamically on mount
     useEffect(() => {
@@ -62,13 +63,14 @@ const Login = () => {
             const res = await AuthApi.Login({
                 email: email.trim().toLowerCase(),
                 password,
-                //role: selectedRole
+                role: selectedRole
             });
 
-            const token = res.data?.token;
-            if (token) {
-                localStorage.setItem('token', token);
-                navigate('/panda-create-template');
+            const receivedToken = res.data?.token;
+            if (receivedToken) {
+                // FIX: Update the global AuthContext state so ProtectedRoute registers the session instantly
+                updateToken(receivedToken);
+                navigate('/panda-create-template', { replace: true });
             } else {
                 throw new Error("Invalid response structural context from auth engine.");
             }
@@ -132,7 +134,7 @@ const Login = () => {
                         />
                     </div>
 
-                    {/* DYNAMIC ROLE DROPDOWN (Positioned precisely after password input) */}
+                    {/* DYNAMIC ROLE DROPDOWN */}
                     {/* <div className="form-group">
                         <label className="form-label" htmlFor="role">Account Role Classification</label>
                         <select
@@ -163,13 +165,6 @@ const Login = () => {
                         {loading ? 'Authenticating System Access...' : 'Sign In To Account'}
                     </button>
                 </form>
-
-                {/* <p className="auth-footer-text">
-                    Need a secure profile provisioned?{' '}
-                    <Link to="/register" className="auth-link">
-                        Contact System Administrator
-                    </Link>
-                </p> */}
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { setupAxiosInterceptors } from '../api/axiosSetup';
+import { axios, setupAxiosInterceptors } from '../api/axios/axiosinstance';
 
 const AuthContext = createContext(null);
 

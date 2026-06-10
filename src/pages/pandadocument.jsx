@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import PandaDocumentApi from '../api/pandadocument';
 import { Editor } from 'pandadoc-editor';
+import { FileText, Eye, Send, Trash2, ArrowLeft, Folder, Check, MoreVertical, Download, Printer, AlertCircle, PenTool } from 'lucide-react';
 
 const PandaDocument = () => {
     const [viewMode, setViewMode] = useState('list');
@@ -239,10 +240,13 @@ const PandaDocument = () => {
                                                 <tr key={doc.id} className="table-body-row">
                                                     <td className="table-td td-primary-bold">
                                                         <div className="flex-layout-align">
-                                                            <span className="emoji-icon">📄</span>
+                                                            <span className="emoji-icon">
+                                                                <FileText size={18} style={{ verticalAlign: 'middle' }} />
+                                                            </span>
                                                             <div>
                                                                 <div>{doc.name}</div>
-                                                                <span className="metadata-id-tag">ID: {doc.id}</span>
+                                                                {/* ID display commented out to prevent rendering while preserving layout structure */}
+                                                                {/* <span className="metadata-id-tag">ID: {doc.id}</span> */}
                                                             </div>
                                                         </div>
                                                     </td>
@@ -261,7 +265,7 @@ const PandaDocument = () => {
                                                                 className="btn-action btn-open-studio"
                                                                 onClick={() => handleLaunchDocument(doc.id, doc.name, doc.status)}
                                                             >
-                                                                👁️ Open Studio
+                                                                <Eye size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Open Studio
                                                             </button>
 
                                                             {cleanStatus === 'draft' && (
@@ -270,7 +274,7 @@ const PandaDocument = () => {
                                                                     className="btn-action btn-send-studio"
                                                                     onClick={() => handleSendDocument(doc.id)}
                                                                 >
-                                                                    🚀 Send
+                                                                    <Send size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Send
                                                                 </button>
                                                             )}
 
@@ -279,7 +283,7 @@ const PandaDocument = () => {
                                                                 className="btn-action btn-delete-studio"
                                                                 onClick={() => handleDeleteDocument(doc.id)}
                                                             >
-                                                                🗑️ Delete
+                                                                <Trash2 size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Delete
                                                             </button>
                                                         </div>
                                                     </td>
@@ -305,7 +309,7 @@ const PandaDocument = () => {
                                     className="pd-exit-arrow-btn"
                                     onClick={() => { setViewMode('list'); fetchDocuments(); }}
                                 >
-                                    ←
+                                    <ArrowLeft size={16} />
                                 </button>
                                 <div className="pd-title-meta-block">
                                     <div className="pd-title-row">
@@ -318,10 +322,14 @@ const PandaDocument = () => {
                                         <span className="pd-meta-divider">•</span>
                                         <span className="pd-meta-text-item">{activeDocCurrency} {activeDocValue}</span>
                                         <span className="pd-meta-divider">•</span>
-                                        <span className="pd-folder-icon">📁</span>
+                                        <span className="pd-folder-icon">
+                                            <Folder size={14} style={{ verticalAlign: 'middle' }} />
+                                        </span>
                                         <span className="pd-meta-text-item">All documents</span>
                                         <span className="pd-meta-divider">•</span>
-                                        <span className="pd-checkmark-icon">✓</span>
+                                        <span className="pd-checkmark-icon">
+                                            <Check size={14} style={{ verticalAlign: 'middle' }} />
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -357,7 +365,7 @@ const PandaDocument = () => {
                                     title="Preview Mode"
                                     onClick={handleTogglePreviewMode}
                                 >
-                                    👁️
+                                    <Eye size={18} />
                                 </button>
 
                                 {/* Dropdown More Actions Anchoring Panel */}
@@ -368,18 +376,24 @@ const PandaDocument = () => {
                                         title="More Actions"
                                         onClick={() => setShowMoreMenu(!showMoreMenu)}
                                     >
-                                        ⋮
+                                        <MoreVertical size={18} />
                                     </button>
 
                                     {showMoreMenu && (
                                         <div className="pd-context-dropdown-menu">
                                             {/* ACTIVE FUNCTIONAL INTEGRATIONS */}
-                                            <div className="pd-dropdown-item item-clickable" onClick={handleDownloadDocument}>📥 Download</div>
-                                            <div className="pd-dropdown-item item-clickable" onClick={handlePrintDocument}>🖨️ Print</div>
+                                            <div className="pd-dropdown-item item-clickable" onClick={handleDownloadDocument}>
+                                                <Download size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Download
+                                            </div>
+                                            <div className="pd-dropdown-item item-clickable" onClick={handlePrintDocument}>
+                                                <Printer size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Print
+                                            </div>
 
                                             <div className="pd-dropdown-divider" />
 
-                                            <div className="pd-dropdown-item item-clickable text-danger" onClick={() => handleDeleteDocument(activeDocId)}>🗑️ Delete</div>
+                                            <div className="pd-dropdown-item item-clickable text-danger" onClick={() => handleDeleteDocument(activeDocId)}>
+                                                <Trash2 size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Delete
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -391,8 +405,6 @@ const PandaDocument = () => {
                         </div>
 
                         {/* Target Canvas Core Layout Wrapper Panels */}
-                        {/* <div className="pd-studio-body-viewport"> */}
-                        {/* Render interactive SDK container frame only when not overridden by preview status */}
                         <div
                             id="panda-document-canvas-container"
                             className={`flex-canvas-fill ${isPreviewMode ? 'hide-editor-canvas-view' : ''}`}
@@ -402,7 +414,10 @@ const PandaDocument = () => {
                         {isPreviewMode && (
                             <div className="pd-recipient-preview-overlay">
                                 <div className="preview-sticky-alert">
-                                    <span>👀 You are viewing this agreement in recipient simulation mode. Toolbars, layouts, and field assignment grids have been safely isolated.</span>
+                                    <span>
+                                        <AlertCircle size={16} style={{ marginRight: '8px', verticalAlign: 'middle', display: 'inline' }} />
+                                        You are viewing this agreement in recipient simulation mode. Toolbars, layouts, and field assignment grids have been safely isolated.
+                                    </span>
                                 </div>
                                 <div className="preview-document-scroll-mock">
                                     <div className="preview-rendered-page-sheet">
@@ -411,13 +426,14 @@ const PandaDocument = () => {
                                         <p className="preview-body-p">This section replicates the visual appearance of your document framework for end clients.</p>
                                         <div className="preview-mock-field-box">
                                             <span className="field-box-label">Signature Field (Client Signer)</span>
-                                            <div className="field-box-stub">🖊️ Click to sign framework assignment</div>
+                                            <div className="field-box-stub">
+                                                <PenTool size={16} style={{ marginRight: '6px', verticalAlign: 'middle' }} /> Click to sign framework assignment
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         )}
-                        {/* </div> */}
 
                     </div>
                 )}

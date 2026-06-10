@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PandaTemplateApi from '../api/pandatemplate';
 import PandaDocumentApi from '../api/pandadocument';
 import { Editor } from 'pandadoc-editor';
+import { FilePlus, FolderOpen, FileText, Pencil, ArrowLeft, Folder, Check, MoreVertical, Settings, Copy, Trash2 } from 'lucide-react';
 
 const PandaTemplate = () => {
     const navigate = useNavigate();
@@ -179,14 +180,17 @@ const PandaTemplate = () => {
                 {/* VIEW 1: MAIN NAVIGATION MENU */}
                 {viewMode === 'selection' && (
                     <div className="template-grid">
-                        {/* FIXED: This now immediately executes background generation and goes straight to the canvas */}
                         <div className="template-card" onClick={handleInstantCreateTemplate} style={{ cursor: 'pointer' }}>
-                            <h3>➕ Create New Template</h3>
+                            <h3>
+                                <FilePlus size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Create New Template
+                            </h3>
                             <p>Instantly generate and open a brand new layout workspace context.</p>
                         </div>
 
                         <div className="template-card interactive-card" onClick={fetchPandaTemplates} style={{ cursor: 'pointer' }}>
-                            <h3>📋 View Existing Workspace Templates</h3>
+                            <h3>
+                                <FolderOpen size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> View Existing Workspace Templates
+                            </h3>
                             <p>Fetch, browse, and natively modify your account layout models in real time.</p>
                         </div>
                     </div>
@@ -209,15 +213,16 @@ const PandaTemplate = () => {
                                 {templates.map((template) => (
                                     <div key={template.id} className="template-card vertical-space-between">
                                         <div>
-                                            <h3>📄 {template.name}</h3>
-                                            <p className="template-id-text">ID: {template.id}</p>
+                                            <h3>
+                                                <FileText size={18} style={{ marginRight: '6px', verticalAlign: 'middle' }} /> {template.name}
+                                            </h3>
                                         </div>
                                         <button
                                             type="button"
                                             className="primary-btn list-action-fullwidth"
                                             onClick={() => handleLaunchEditorCanvas(template.id, template.name)}
                                         >
-                                            ✏️ Edit Layout Canvas
+                                            <Pencil size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} /> Edit Layout Canvas
                                         </button>
                                     </div>
                                 ))}
@@ -240,7 +245,7 @@ const PandaTemplate = () => {
                                     className="pd-exit-arrow-btn"
                                     onClick={() => { setViewMode('selection'); }}
                                 >
-                                    ←
+                                    <ArrowLeft size={16} />
                                 </button>
                                 <div className="pd-title-meta-block">
                                     <div className="pd-title-row">
@@ -253,22 +258,20 @@ const PandaTemplate = () => {
                                         <span className="pd-meta-divider">•</span>
                                         <span className="pd-meta-text-item">₹ 0.00</span>
                                         <span className="pd-meta-divider">•</span>
-                                        <span className="pd-folder-icon">📁</span>
+                                        <span className="pd-folder-icon">
+                                            <Folder size={14} style={{ verticalAlign: 'middle' }} />
+                                        </span>
                                         <span className="pd-meta-text-item">All templates</span>
                                         <span className="pd-meta-divider">•</span>
-                                        <span className="pd-checkmark-icon">✓</span>
+                                        <span className="pd-checkmark-icon">
+                                            <Check size={14} style={{ verticalAlign: 'middle' }} />
+                                        </span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Right Side Workflow Core Anchors */}
                             <div className="pd-header-right">
-                                {/* <div className="pd-avatar-circle">CL</div> */}
-
-                                {/* <button type="button" className="pd-btn-utility btn-manage-gray">
-                                    <span className="pd-icon-spacing">👥</span> Manage
-                                </button> */}
-
                                 <button
                                     type="button"
                                     className="pd-btn-finish-yellow bg-teal-override"
@@ -279,8 +282,6 @@ const PandaTemplate = () => {
 
                                 <div className="pd-vertical-separator" />
 
-                                {/* <button type="button" className="pd-icon-action-btn" title="Comments/Suggestions">💬</button> */}
-
                                 {/* Dropdown Option List Anchoring Box */}
                                 <div className="pd-dropdown-anchor-wrapper">
                                     <button
@@ -289,16 +290,22 @@ const PandaTemplate = () => {
                                         title="More Actions"
                                         onClick={() => setShowMoreMenu(!showMoreMenu)}
                                     >
-                                        ⋮
+                                        <MoreVertical size={18} />
                                     </button>
 
                                     {showMoreMenu && (
                                         <div className="pd-context-dropdown-menu">
-                                            <div className="pd-dropdown-item item-disabled">⚙️ Settings</div>
-                                            <div className="pd-dropdown-item item-disabled">🔄 Duplicate Template</div>
+                                            <div className="pd-dropdown-item item-disabled">
+                                                <Settings size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Settings
+                                            </div>
+                                            <div className="pd-dropdown-item item-disabled">
+                                                <Copy size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Duplicate Template
+                                            </div>
                                             <div className="pd-dropdown-divider" />
                                             {/* Destructive Delete Action Hooked to API */}
-                                            <div className="pd-dropdown-item item-clickable text-danger" onClick={handleDeleteTemplateDirectly}>🗑️ Delete Template</div>
+                                            <div className="pd-dropdown-item item-clickable text-danger" onClick={handleDeleteTemplateDirectly}>
+                                                <Trash2 size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Delete Template
+                                            </div>
                                         </div>
                                     )}
                                 </div>
