@@ -12,6 +12,7 @@ const PandaTemplate = () => {
     const [viewMode, setViewMode] = useState('selection');
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [canvasLoading, setCanvasLoading] = useState(false);
     const [activeEditorToken, setActiveEditorToken] = useState('');
     const [activeTemplateName, setActiveTemplateName] = useState('');
     const [activeTemplateId, setActiveTemplateId] = useState('');
@@ -35,9 +36,11 @@ const PandaTemplate = () => {
                     });
 
                     await editorInstance.open();
+                    setCanvasLoading(false); // Drop template loading view layer mask smoothly
                 } catch (err) {
                     console.error("Failed to safely build embedded template canvas:", err);
                     alert("A setup error occurred inside the layout designer canvas wrapper.");
+                    setCanvasLoading(false);
                 }
             };
 
@@ -68,6 +71,7 @@ const PandaTemplate = () => {
     // Shared execution hub for launching editing frames safely from the list view
     const handleLaunchEditorCanvas = async (templateId, templateName) => {
         setLoading(true);
+        setCanvasLoading(true);
         try {
             let targetedName = templateName;
             if (!targetedName) {
@@ -86,6 +90,7 @@ const PandaTemplate = () => {
             }
         } catch (error) {
             alert(`Failed to launch editor frame: ${error.message}`);
+            setCanvasLoading(false);
         } finally {
             setLoading(false);
         }
@@ -95,6 +100,7 @@ const PandaTemplate = () => {
     // Completely bypasses the configuration form, provisions in background, and loads canvas.
     const handleInstantCreateTemplate = async () => {
         setLoading(true);
+        setCanvasLoading(true);
 
         // Generate a standard placeholder name just like PandaDoc does
         const placeholderName = `Untitled Template - ${new Date().toLocaleDateString()}`;
@@ -122,6 +128,7 @@ const PandaTemplate = () => {
         } catch (error) {
             alert(`Failed to instantly build testing blueprint layout: ${error.message}`);
             setViewMode('selection');
+            setCanvasLoading(false);
         } finally {
             setLoading(false);
         }
@@ -159,7 +166,7 @@ const PandaTemplate = () => {
         }
     };
 
-    if (loading) {
+    if (loading && viewMode !== 'editor-canvas') {
         return <div className="agreement-loading">Processing your workspace environment...</div>;
     }
 
@@ -316,8 +323,18 @@ const PandaTemplate = () => {
                             </div>
                         </div>
 
-                        {/* Canvas Frame Container */}
-                        <div id="panda-editor-canvas-container" className="flex-canvas-fill" />
+                        {/* Structural Layout Box Isolating Padding-Left Bug Variables */}
+                        <div style={{ position: 'relative', flex: 1, width: '100%', height: 'calc(100vh - 56px)' }}>
+                            {canvasLoading && (
+                                <div className="canvas-loader-overlay">
+                                    <div className="canvas-spinner"></div>
+                                    <div className="canvas-loader-text">Loading secure template canvas engine...</div>
+                                </div>
+                            )}
+
+                            {/* Canvas Frame Container */}
+                            <div id="panda-editor-canvas-container" className="flex-canvas-fill" />
+                        </div>
                     </div>
                 )}
 

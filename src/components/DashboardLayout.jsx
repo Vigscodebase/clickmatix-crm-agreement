@@ -51,7 +51,7 @@ const DashboardLayout = ({ children }) => {
 
                 <nav className="sidebar-nav-links-pipeline">
                     <NavLink
-                        to="/panda-create-document"
+                        to="/signnow-create-document"
                         className={({ isActive }) => `nav-link-anchor ${isActive ? 'nav-link-active' : ''}`}
                     >
                         <span className="link-glyph-icon">
@@ -61,7 +61,7 @@ const DashboardLayout = ({ children }) => {
                     </NavLink>
 
                     <NavLink
-                        to="/panda-create-template"
+                        to="/signnow-create-template"
                         className={({ isActive }) => `nav-link-anchor ${isActive ? 'nav-link-active' : ''}`}
                     >
                         <span className="link-glyph-icon">

@@ -22,7 +22,7 @@ const Login = () => {
     // Guard Clause: Prevent already authenticated users from accessing login page using reactive token state
     useEffect(() => {
         if (token) {
-            navigate('/panda-create-template', { replace: true });
+            navigate('/signnow-create-template', { replace: true });
         }
     }, [token, navigate]);
 
@@ -70,7 +70,7 @@ const Login = () => {
             if (receivedToken) {
                 // FIX: Update the global AuthContext state so ProtectedRoute registers the session instantly
                 updateToken(receivedToken);
-                navigate('/panda-create-template', { replace: true });
+                navigate('/signnow-create-template', { replace: true });
             } else {
                 throw new Error("Invalid response structural context from auth engine.");
             }

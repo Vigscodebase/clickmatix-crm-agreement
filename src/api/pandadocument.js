@@ -21,6 +21,13 @@ class PandaDocumentApi {
         return axios.post(`pandadoc/send-document`, { document_id: documentId, ...payload });
     };
 
+    static UpdateStatus = (documentId, status) => {
+        return axios.patch(`pandadoc/update-status`, {
+            document_id: documentId,
+            status: status
+        });
+    };
+
     static DeleteDocument = (documentId) => {
         return axios.delete(`pandadoc/delete-document/${documentId}`);
     };

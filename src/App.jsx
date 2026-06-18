@@ -6,6 +6,8 @@ import Login from "./pages/login";
 import Usermanagement from "./pages/usermanagement";
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import SignnowTemplate from "./pages/signnowtemplate";
+import SignnowDocument from "./pages/signnowdocument";
 
 const App = () => {
   return (
@@ -22,6 +24,8 @@ const App = () => {
           <Route element={<ProtectedRoute />}>
             <Route path="/panda-create-document" element={<PandaDocument />} />
             <Route path="/panda-create-template" element={<PandaTemplate />} />
+            <Route path="/signnow-create-document" element={<SignnowDocument />} />
+            <Route path="/signnow-create-template" element={<SignnowTemplate />} />
           </Route>
 
           {/* Highly Restricted Management Tier (Role Enforcement Layer) */}

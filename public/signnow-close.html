@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Closing Canvas Studio...</title>
+    </head>
+    <body>
+        <script>
+        // Enforce absolute security by targeting your exact domain origin explicitly instead of '*'
+        const targetOrigin = window.location.origin;
+        window.parent.postMessage({ type: "SIGNNOW_STUDIO_CLOSED" }, targetOrigin);
+    </script>
+    </body>
+</html>

@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import PandaDocumentApi from '../api/pandadocument';
+import SignNowDocApi from '../api/signnowdocument';
 import { useAuth } from '../context/AuthContext';
-import { Editor } from 'pandadoc-editor';
 import { FileText, Eye, Send, Trash2, ArrowLeft, Folder, Check, MoreVertical, Download, Printer, AlertCircle, PenTool } from 'lucide-react';
 
-const PandaDocument = () => {
+const SignNowDocument = () => {
     const { user } = useAuth();
     const [viewMode, setViewMode] = useState('list');
     const [documents, setDocuments] = useState([]);
@@ -13,34 +12,29 @@ const PandaDocument = () => {
     const [canvasLoading, setCanvasLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('all');
 
-    // Active embedded workspace variables
     const [activeEditorToken, setActiveEditorToken] = useState('');
     const [activeDocName, setActiveDocName] = useState('');
     const [activeDocId, setActiveDocId] = useState('');
     const [activeDocStatus, setActiveDocStatus] = useState('draft');
 
-    // Dynamic Document Value Metadata States
     const [activeDocValue, setActiveDocValue] = useState('0.00');
     const [activeDocCurrency, setActiveDocCurrency] = useState('₹');
 
-    // UI Interactive Menu & View Layer Toggles
     const [showMoreMenu, setShowMoreMenu] = useState(false);
     const [isPreviewMode, setIsPreviewMode] = useState(false);
 
-    // Role-Based Access Control Rule Definition for Privileged Actions
     const canSend = user && ['super_admin', 'admin', 'account_manager'].includes(user.role);
 
     useEffect(() => {
         fetchDocuments();
     }, []);
 
-    // FIX: Updated filtering conditions so 'viewed' documents remain visible inside the 'sent' tab pipeline
     useEffect(() => {
         if (activeTab === 'all') {
             setFilteredDocuments(documents);
         } else {
             setFilteredDocuments(documents.filter(doc => {
-                const cleanStatus = doc.status?.toLowerCase().replace('document.', '') || 'draft';
+                const cleanStatus = doc.status?.toLowerCase() || 'draft';
                 if (activeTab === 'sent') {
                     return cleanStatus === 'sent' || cleanStatus === 'viewed';
                 }
@@ -49,44 +43,13 @@ const PandaDocument = () => {
         }
     }, [activeTab, documents]);
 
-    useEffect(() => {
-        let editorInstance = null;
-
-        if (viewMode === 'editor-canvas' && activeEditorToken && !isPreviewMode) {
-            const mountDocumentEditor = async () => {
-                try {
-                    editorInstance = new Editor("panda-document-canvas-container", {
-                        token: activeEditorToken,
-                        fieldPlacementOnly: false,
-                        hideHeader: true,
-                        hideToolbar: false,
-                        hideSaveButton: false
-                    });
-                    await editorInstance.open();
-                    setCanvasLoading(false); // Clear inline loader after canvas context anchors cleanly
-                } catch (err) {
-                    console.error("Failed to safely load document workspace studio:", err);
-                    alert("A setup error occurred inside the document engine canvas wrapper.");
-                    setCanvasLoading(false);
-                }
-            };
-            mountDocumentEditor();
-        }
-
-        return () => {
-            if (editorInstance && typeof editorInstance.destroy === 'function') {
-                editorInstance.destroy();
-            }
-        };
-    }, [viewMode, activeEditorToken, isPreviewMode]);
-
     const fetchDocuments = async () => {
         setLoading(true);
         try {
-            const res = await PandaDocumentApi.ListDocuments();
+            const res = await SignNowDocApi.ListDocuments();
             setDocuments(res.data.results || res.data || []);
         } catch (error) {
-            alert(`Failed to load PandaDoc documents: ${error.message}`);
+            alert(`Failed to load SignNow documents: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -94,20 +57,19 @@ const PandaDocument = () => {
 
     const handleLaunchDocument = async (docId, docName, rawStatus) => {
         setLoading(true);
-        setCanvasLoading(true); // Pre-fire studio frame lifecycle mask loading state
+        setCanvasLoading(true);
         try {
-            // Find target document metadata inside inventory layout cache to read dynamic pricing metrics
             const targetDoc = documents.find(d => d.id === docId);
             if (targetDoc) {
-                setActiveDocValue(targetDoc.amount || targetDoc.pricing?.total || '0.00');
-                setActiveDocCurrency(targetDoc.currency?.symbol || targetDoc.pricing?.currency || '₹');
+                setActiveDocValue(targetDoc.amount || '0.00');
+                setActiveDocCurrency(targetDoc.currency?.symbol || '₹');
             }
 
             setActiveDocName(docName);
             setActiveDocId(docId);
-            setActiveDocStatus(rawStatus?.toLowerCase().replace('document.', '') || 'draft');
+            setActiveDocStatus(rawStatus?.toLowerCase() || 'draft');
 
-            const response = await PandaDocumentApi.GetDocumentEditingSession(docId);
+            const response = await SignNowDocApi.GetDocumentEditingSession(docId);
             if (response.data?.token) {
                 setActiveEditorToken(response.data.token);
                 setViewMode('editor-canvas');
@@ -130,7 +92,7 @@ const PandaDocument = () => {
         }
         if (!window.confirm("Are you ready to send this contract document to recipients?")) return;
         try {
-            await PandaDocumentApi.SendDocument(docId);
+            await SignNowDocApi.SendDocument(docId);
             alert("Document dispatched and sent successfully!");
             fetchDocuments();
             if (viewMode === 'editor-canvas') setViewMode('list');
@@ -141,14 +103,11 @@ const PandaDocument = () => {
 
     const handleManualStatusChange = async (docId, newStatus) => {
         if (!canSend) return;
-        if (!window.confirm(`Are you sure you want to manually update this document's status to ${newStatus.toUpperCase()}?`)) {
-            return;
-        }
+        if (!window.confirm(`Are you sure you want to manually update this document's status to ${newStatus.toUpperCase()}?`)) return;
 
         setLoading(true);
         try {
-            // Fires manual change request payload structure against PandaDoc status tracker endpoints
-            await PandaDocumentApi.UpdateStatus(docId, newStatus);
+            await SignNowDocApi.UpdateStatus(docId, newStatus);
             alert("Document state contextual metrics updated successfully.");
             await fetchDocuments();
         } catch (error) {
@@ -161,7 +120,7 @@ const PandaDocument = () => {
     const handleDeleteDocument = async (docId) => {
         if (!window.confirm("Are you sure you want to permanently delete this document layout template framework? This action cannot be undone.")) return;
         try {
-            await PandaDocumentApi.DeleteDocument(docId);
+            await SignNowDocApi.DeleteDocument(docId);
             alert("Document dropped successfully.");
             fetchDocuments();
             if (viewMode === 'editor-canvas') setViewMode('list');
@@ -170,22 +129,16 @@ const PandaDocument = () => {
         }
     };
 
-    // =========================================================================
-    // FULL REPLICATED FUNCTIONALITY PIPELINES
-    // =========================================================================
-
-    // Toggle full preview interface masking layout components
     const handleTogglePreviewMode = () => {
         setIsPreviewMode(!isPreviewMode);
         setShowMoreMenu(false);
     };
 
-    // Download actual processed high-fidelity PDF from server binary blobs
     const handleDownloadDocument = async () => {
         try {
             setLoading(true);
             setShowMoreMenu(false);
-            const response = await PandaDocumentApi.DownloadDocumentPdf(activeDocId);
+            const response = await SignNowDocApi.DownloadDocumentPdf(activeDocId);
 
             const fileBlob = new Blob([response.data], { type: 'application/pdf' });
             const temporaryDownloadUrl = window.URL.createObjectURL(fileBlob);
@@ -206,22 +159,6 @@ const PandaDocument = () => {
         }
     };
 
-    // Triggers a localized shadow focus layout to print inside the frame container bounds
-    const handlePrintDocument = () => {
-        setShowMoreMenu(false);
-        const iframeTarget = document.querySelector('#panda-document-canvas-container iframe');
-        if (iframeTarget) {
-            try {
-                iframeTarget.contentWindow.focus();
-                iframeTarget.contentWindow.print();
-            } catch (e) {
-                window.print();
-            }
-        } else {
-            window.print();
-        }
-    };
-
     if (loading && viewMode !== 'editor-canvas') {
         return <div className="agreement-loading">Loading asset documents context...</div>;
     }
@@ -230,7 +167,6 @@ const PandaDocument = () => {
         <div className={`agreement-page ${viewMode === 'editor-canvas' ? 'editor-fullscreen-mode' : ''}`}>
             <div className={`agreement-container ${viewMode === 'editor-canvas' ? 'canvas-mode-padding' : 'list-mode-padding'}`}>
 
-                {/* LIST DASHBOARD VIEW CONTAINER */}
                 {viewMode === 'list' && (
                     <>
                         <div className="agreement-header header-spacing">
@@ -238,7 +174,6 @@ const PandaDocument = () => {
                             <p className="dashboard-subtitle">Track deployment statuses, client reviews, execution, and audit logs.</p>
                         </div>
 
-                        {/* STATUS TAB FILTER BAR */}
                         <div className="tab-filter-bar">
                             {['all', 'draft', 'sent', 'viewed', 'completed'].map((tab) => (
                                 <button
@@ -252,7 +187,6 @@ const PandaDocument = () => {
                             ))}
                         </div>
 
-                        {/* DOCUMENTS DATA GRID/TABLE */}
                         {filteredDocuments.length === 0 ? (
                             <div className="empty-results-notice">
                                 No agreements found matching this target status filter context.
@@ -270,7 +204,7 @@ const PandaDocument = () => {
                                     </thead>
                                     <tbody>
                                         {filteredDocuments.map((doc) => {
-                                            const cleanStatus = doc.status?.toLowerCase().replace('document.', '') || 'draft';
+                                            const cleanStatus = doc.status?.toLowerCase() || 'draft';
                                             const statusClass = `status-${cleanStatus}`;
 
                                             return (
@@ -278,33 +212,20 @@ const PandaDocument = () => {
                                                     <td className="table-td td-primary-bold">
                                                         <div className="flex-layout-align">
                                                             <span className="emoji-icon">
-                                                                <FileText size={18} style={{ verticalAlign: 'middle' }} />
+                                                                <FileText size={18} className="sn-icon-vertical-middle" />
                                                             </span>
-                                                            <div>
-                                                                <div>{doc.name}</div>
-                                                            </div>
+                                                            <div>{doc.name}</div>
                                                         </div>
                                                     </td>
                                                     <td className="table-td">
-                                                        {/* ROLE CONTROL OVERRIDE: Dropdown for Admins/Managers, text pill fallback for Sales */}
                                                         {canSend ? (
                                                             <select
                                                                 value={cleanStatus}
                                                                 onChange={(e) => handleManualStatusChange(doc.id, e.target.value)}
-                                                                className={`status-badge ${statusClass}`}
-                                                                style={{
-                                                                    border: '1px solid rgba(0,0,0,0.06)',
-                                                                    outline: 'none',
-                                                                    cursor: 'pointer',
-                                                                    fontFamily: 'inherit',
-                                                                    appearance: 'auto',
-                                                                    fontWeight: '700',
-                                                                    paddingRight: '6px'
-                                                                }}
+                                                                className={`status-badge ${statusClass} sn-select-status-override`}
                                                             >
-                                                                {/* Preserves the current automated pipeline step if it's not one of the manual target overrides */}
                                                                 {!['completed', 'voided', 'paid', 'declined'].includes(cleanStatus) && (
-                                                                    <option value={cleanStatus}>{cleanStatus.toUpperCase().replace('_', ' ')}</option>
+                                                                    <option value={cleanStatus}>{cleanStatus.toUpperCase()}</option>
                                                                 )}
                                                                 <option value="completed">COMPLETED</option>
                                                                 <option value="voided">EXPIRED</option>
@@ -313,7 +234,7 @@ const PandaDocument = () => {
                                                             </select>
                                                         ) : (
                                                             <span className={`status-badge ${statusClass}`}>
-                                                                {cleanStatus.toUpperCase().replace('_', ' ')}
+                                                                {cleanStatus.toUpperCase()}
                                                             </span>
                                                         )}
                                                     </td>
@@ -327,7 +248,7 @@ const PandaDocument = () => {
                                                                 className="btn-action btn-open-studio"
                                                                 onClick={() => handleLaunchDocument(doc.id, doc.name, doc.status)}
                                                             >
-                                                                <Eye size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Open Studio
+                                                                <Eye size={14} className="sn-icon-margin-right-sm" /> Open Studio
                                                             </button>
 
                                                             {cleanStatus === 'draft' && canSend && (
@@ -336,7 +257,7 @@ const PandaDocument = () => {
                                                                     className="btn-action btn-send-studio"
                                                                     onClick={() => handleSendDocument(doc.id)}
                                                                 >
-                                                                    <Send size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Send
+                                                                    <Send size={14} className="sn-icon-margin-right-sm" /> Send
                                                                 </button>
                                                             )}
 
@@ -345,7 +266,7 @@ const PandaDocument = () => {
                                                                 className="btn-action btn-delete-studio"
                                                                 onClick={() => handleDeleteDocument(doc.id)}
                                                             >
-                                                                <Trash2 size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Delete
+                                                                <Trash2 size={14} className="sn-icon-margin-right-sm" /> Delete
                                                             </button>
                                                         </div>
                                                     </td>
@@ -359,12 +280,9 @@ const PandaDocument = () => {
                     </>
                 )}
 
-                {/* FULL-BLEED NATIVE REPLICATED STUDIO ENGINE LAYOUT */}
                 {viewMode === 'editor-canvas' && (
                     <div className="editor-canvas-workspace full-height-flex">
-
                         <div className="native-pandadoc-header">
-                            {/* Left Side Metadata Layout Blocks */}
                             <div className="pd-header-left">
                                 <button
                                     type="button"
@@ -385,18 +303,17 @@ const PandaDocument = () => {
                                         <span className="pd-meta-text-item">{activeDocCurrency} {activeDocValue}</span>
                                         <span className="pd-meta-divider">•</span>
                                         <span className="pd-folder-icon">
-                                            <Folder size={14} style={{ verticalAlign: 'middle' }} />
+                                            <Folder size={14} className="sn-icon-vertical-middle" />
                                         </span>
                                         <span className="pd-meta-text-item">All documents</span>
                                         <span className="pd-meta-divider">•</span>
                                         <span className="pd-checkmark-icon">
-                                            <Check size={14} style={{ verticalAlign: 'middle' }} />
+                                            <Check size={14} className="sn-icon-vertical-middle" />
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Right Side Utility Flow Anchors */}
                             <div className="pd-header-right">
                                 {!isPreviewMode && canSend && (
                                     <button
@@ -420,22 +337,18 @@ const PandaDocument = () => {
 
                                 <div className="pd-vertical-separator" />
 
-                                {/* Interactive Action Layout Links */}
                                 <button
                                     type="button"
                                     className={`pd-icon-action-btn ${isPreviewMode ? 'active-tool-btn' : ''}`}
-                                    title="Preview Mode"
                                     onClick={handleTogglePreviewMode}
                                 >
                                     <Eye size={18} />
                                 </button>
 
-                                {/* Dropdown More Actions Anchoring Panel */}
                                 <div className="pd-dropdown-anchor-wrapper">
                                     <button
                                         type="button"
                                         className={`pd-icon-action-btn ${showMoreMenu ? 'active-dropdown-btn' : ''}`}
-                                        title="More Actions"
                                         onClick={() => setShowMoreMenu(!showMoreMenu)}
                                     >
                                         <MoreVertical size={18} />
@@ -443,31 +356,26 @@ const PandaDocument = () => {
 
                                     {showMoreMenu && (
                                         <div className="pd-context-dropdown-menu">
-                                            {/* ACTIVE FUNCTIONAL INTEGRATIONS */}
                                             <div className="pd-dropdown-item item-clickable" onClick={handleDownloadDocument}>
-                                                <Download size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Download
+                                                <Download size={14} className="sn-icon-margin-right-md" /> Download
                                             </div>
-                                            <div className="pd-dropdown-item item-clickable" onClick={handlePrintDocument}>
-                                                <Printer size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Print
+                                            <div className="pd-dropdown-item item-clickable" onClick={() => window.print()}>
+                                                <Printer size={14} className="sn-icon-margin-right-md" /> Print
                                             </div>
-
                                             <div className="pd-dropdown-divider" />
-
                                             <div className="pd-dropdown-item item-clickable text-danger" onClick={() => handleDeleteDocument(activeDocId)}>
-                                                <Trash2 size={14} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Delete
+                                                <Trash2 size={14} className="sn-icon-margin-right-md" /> Delete
                                             </div>
                                         </div>
                                     )}
                                 </div>
 
                                 <div className="pd-vertical-separator" />
-
-                                <div className="pd-avatar-circle circle-mini">GP</div>
+                                <div className="pd-avatar-circle circle-mini">SA</div>
                             </div>
                         </div>
 
-                        {/* Structural Layout Box Isolating Padding-Left Bug Variables */}
-                        <div style={{ position: 'relative', flex: 1, width: '100%', height: 'calc(100vh - 56px)' }}>
+                        <div className="sn-canvas-relative-box">
                             {canvasLoading && !isPreviewMode && (
                                 <div className="canvas-loader-overlay">
                                     <div className="canvas-spinner"></div>
@@ -475,19 +383,19 @@ const PandaDocument = () => {
                                 </div>
                             )}
 
-                            {/* Target Canvas Core Layout Wrapper Panels */}
-                            <div
-                                id="panda-document-canvas-container"
-                                className={`flex-canvas-fill ${isPreviewMode ? 'hide-editor-canvas-view' : ''}`}
+                            <iframe
+                                src={activeEditorToken}
+                                title="SignNow Studio Canvas"
+                                className="sn-canvas-iframe-element"
+                                onLoad={() => setCanvasLoading(false)}
                             />
                         </div>
 
-                        {/* HIGH FIDELITY ISOLATED CLIENT SIGNING SIMULATION PREVIEW FRAME */}
                         {isPreviewMode && (
                             <div className="pd-recipient-preview-overlay">
                                 <div className="preview-sticky-alert">
                                     <span>
-                                        <AlertCircle size={16} style={{ marginRight: '8px', verticalAlign: 'middle', display: 'inline' }} />
+                                        <AlertCircle size={16} className="sn-icon-margin-right-sm" />
                                         You are viewing this agreement in recipient simulation mode. Toolbars, layouts, and field assignment grids have been safely isolated.
                                     </span>
                                 </div>
@@ -499,20 +407,18 @@ const PandaDocument = () => {
                                         <div className="preview-mock-field-box">
                                             <span className="field-box-label">Signature Field (Client Signer)</span>
                                             <div className="field-box-stub">
-                                                <PenTool size={16} style={{ marginRight: '6px', verticalAlign: 'middle' }} /> Click to sign framework assignment
+                                                <PenTool size={16} className="sn-icon-margin-right-md" /> Click to sign framework assignment
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         )}
-
                     </div>
                 )}
-
             </div>
         </div>
     );
 };
 
-export default PandaDocument;
+export default SignNowDocument;
