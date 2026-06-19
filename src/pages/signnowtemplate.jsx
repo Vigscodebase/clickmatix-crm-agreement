@@ -1,12 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import SignNowTempApi from '../api/signnowemplate';
-import { FileText, PlusCircle, FolderOpen, ArrowLeft, Trash2 } from 'lucide-react';
+import { FileText, PlusCircle, FolderOpen, ArrowLeft, Trash2, X } from 'lucide-react';
 
 const SignNowTemplateManager = () => {
     const [viewMode, setViewMode] = useState('menu'); // menu | template-grid | template-editor
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(false);
     const [activeEditorUrl, setActiveEditorUrl] = useState('');
+
+    // Modal Specific State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newTemplateName, setNewTemplateName] = useState('');
 
     const iframeLoadCount = useRef(0);
 
@@ -33,19 +37,31 @@ const SignNowTemplateManager = () => {
             const response = await SignNowTempApi.ListTemplates();
             setTemplates(response.data.results || []);
         } catch (error) {
-            alert(`Failed to fetch templates inventory from workspace: ${error.message}`);
+            console.error(error);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleCreateTemplate = async () => {
+    const handleOpenCreateModal = () => {
+        setNewTemplateName('');
+        setIsModalOpen(true);
+    };
+
+    const handleCloseAndResetModal = () => {
+        setNewTemplateName('');
+        setIsModalOpen(false);
+    };
+
+    const handleConfirmCreateTemplate = async () => {
+        const autoName = `Template Asset — ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+        const finalTemplateName = newTemplateName.trim() || autoName;
+
+        setIsModalOpen(false);
         setLoading(true);
         try {
-            const autoName = `Template Asset — ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-
             const response = await SignNowTempApi.CreateTemplate({
-                name: autoName,
+                name: finalTemplateName,
                 description: 'Generated via Express CRM Asset Manager'
             });
 
@@ -55,9 +71,10 @@ const SignNowTemplateManager = () => {
                 setViewMode('template-editor');
             }
         } catch (error) {
-            alert(`Failed to generate new layout context framework: ${error.message}`);
+            alert(`Failed to generate template payload reference: ${error.message}`);
         } finally {
             setLoading(false);
+            setNewTemplateName('');
         }
     };
 
@@ -83,7 +100,6 @@ const SignNowTemplateManager = () => {
         setLoading(true);
         try {
             await SignNowTempApi.DeleteTemplate(templateId);
-            alert("Template purged successfully from account workspace tracking registries.");
             await fetchTemplates();
         } catch (error) {
             alert(`Failed to drop layout template: ${error.message}`);
@@ -119,7 +135,7 @@ const SignNowTemplateManager = () => {
                         </div>
 
                         <div className="sn-menu-grid">
-                            <div className="menu-card item-clickable sn-menu-card" onClick={handleCreateTemplate}>
+                            <div className="menu-card item-clickable sn-menu-card" onClick={handleOpenCreateModal}>
                                 <div className="sn-menu-card-inner">
                                     <PlusCircle size={24} className="sn-blue-brand-icon" />
                                     <div>
@@ -195,6 +211,68 @@ const SignNowTemplateManager = () => {
                                 className="sn-canvas-iframe-element"
                                 onLoad={handleIframeLoadTracking}
                             />
+                        </div>
+                    </div>
+                )}
+
+                {/* COMPONENT MODAL OVERLAY WRAPPER */}
+                {isModalOpen && (
+                    <div
+                        className="sn-modal-overlay"
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
+                    >
+                        <div
+                            className="sn-modal-container"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="sn-modal-header">
+                                <h3 className="sn-modal-title">Create New Agreement Template</h3>
+                                <button
+                                    onClick={handleCloseAndResetModal}
+                                    className="sn-modal-close-icon-btn"
+                                    title="Close Dialog"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            <div className="sn-modal-body">
+                                <label className="sn-modal-input-label">
+                                    Template Name
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newTemplateName}
+                                    onChange={(e) => setNewTemplateName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        e.stopPropagation();
+                                        if (e.key === 'Enter') handleConfirmCreateTemplate();
+                                    }}
+                                    placeholder="e.g., Enterprise NDA Workspace Model"
+                                    className="sn-modal-text-input-field"
+                                    autoFocus
+                                />
+                                <p className="sn-modal-input-hint-text">
+                                    Leave empty to automatically fall back to the system's baseline date nomenclature framework.
+                                </p>
+                            </div>
+
+                            <div className="sn-modal-footer">
+                                <button
+                                    onClick={handleCloseAndResetModal}
+                                    className="sn-modal-cancel-btn"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleConfirmCreateTemplate}
+                                    className="sn-modal-save-btn"
+                                >
+                                    Save Template
+                                </button>
+                            </div>
+
                         </div>
                     </div>
                 )}

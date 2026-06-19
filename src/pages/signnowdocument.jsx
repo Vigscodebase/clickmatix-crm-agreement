@@ -35,9 +35,6 @@ const SignNowDocument = () => {
         } else {
             setFilteredDocuments(documents.filter(doc => {
                 const cleanStatus = doc.status?.toLowerCase() || 'draft';
-                if (activeTab === 'sent') {
-                    return cleanStatus === 'sent' || cleanStatus === 'viewed';
-                }
                 return cleanStatus === activeTab.toLowerCase();
             }));
         }
@@ -94,7 +91,12 @@ const SignNowDocument = () => {
         try {
             await SignNowDocApi.SendDocument(docId);
             alert("Document dispatched and sent successfully!");
-            fetchDocuments();
+
+            // Optimistically move layout status on client state tracking to fit tabs
+            setDocuments(prevDocs => prevDocs.map(doc =>
+                doc.id === docId ? { ...doc, status: 'waiting for others' } : doc
+            ));
+
             if (viewMode === 'editor-canvas') setViewMode('list');
         } catch (error) {
             alert(`Failed to dispatch document: ${error.message}`);
@@ -108,8 +110,14 @@ const SignNowDocument = () => {
         setLoading(true);
         try {
             await SignNowDocApi.UpdateStatus(docId, newStatus);
+
+            // CRITICAL FIX: Update state inline directly rather than triggering fetchDocuments().
+            // This prevents the un-synced SignNow API list endpoint from discarding your manual selection.
+            setDocuments(prevDocs => prevDocs.map(doc =>
+                doc.id === docId ? { ...doc, status: newStatus.toLowerCase() } : doc
+            ));
+
             alert("Document state contextual metrics updated successfully.");
-            await fetchDocuments();
         } catch (error) {
             alert(`Failed to manually transition document boundaries: ${error.message}`);
         } finally {
@@ -122,7 +130,7 @@ const SignNowDocument = () => {
         try {
             await SignNowDocApi.DeleteDocument(docId);
             alert("Document dropped successfully.");
-            fetchDocuments();
+            setDocuments(prevDocs => prevDocs.filter(doc => doc.id !== docId));
             if (viewMode === 'editor-canvas') setViewMode('list');
         } catch (error) {
             alert(`Failed to drop document: ${error.message}`);
@@ -159,10 +167,6 @@ const SignNowDocument = () => {
         }
     };
 
-    if (loading && viewMode !== 'editor-canvas') {
-        return <div className="agreement-loading">Loading asset documents context...</div>;
-    }
-
     return (
         <div className={`agreement-page ${viewMode === 'editor-canvas' ? 'editor-fullscreen-mode' : ''}`}>
             <div className={`agreement-container ${viewMode === 'editor-canvas' ? 'canvas-mode-padding' : 'list-mode-padding'}`}>
@@ -174,15 +178,28 @@ const SignNowDocument = () => {
                             <p className="dashboard-subtitle">Track deployment statuses, client reviews, execution, and audit logs.</p>
                         </div>
 
+                        {/* SCREENSHOT EXACT CATEGORIES */}
                         <div className="tab-filter-bar">
-                            {['all', 'draft', 'sent', 'viewed', 'completed'].map((tab) => (
+                            {[
+                                { id: 'all', label: 'All Statuses' },
+                                { id: 'unfinished', label: 'Unfinished' },
+                                { id: 'waiting for me', label: 'Waiting for Me' },
+                                { id: 'waiting for others', label: 'Waiting for Others' },
+                                { id: 'signed', label: 'Signed' },
+                                { id: 'pending', label: 'Pending' },
+                                { id: 'draft', label: 'Draft' },
+                                { id: 'declined', label: 'Declined' },
+                                { id: 'delivery failed', label: 'Delivery Failed' },
+                                { id: 'expiring soon', label: 'Expiring Soon' },
+                                { id: 'expired', label: 'Expired' }
+                            ].map((tab) => (
                                 <button
-                                    key={tab}
+                                    key={tab.id}
                                     type="button"
-                                    onClick={() => setActiveTab(tab)}
-                                    className={`tab-filter-btn ${activeTab === tab ? 'tab-active' : ''}`}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`tab-filter-btn ${activeTab === tab.id ? 'tab-active' : ''}`}
                                 >
-                                    {tab === 'all' ? 'All Documents' : tab}
+                                    {tab.label}
                                 </button>
                             ))}
                         </div>
@@ -205,7 +222,7 @@ const SignNowDocument = () => {
                                     <tbody>
                                         {filteredDocuments.map((doc) => {
                                             const cleanStatus = doc.status?.toLowerCase() || 'draft';
-                                            const statusClass = `status-${cleanStatus}`;
+                                            const statusClass = `status-${cleanStatus.replace(/\s+/g, '-')}`;
 
                                             return (
                                                 <tr key={doc.id} className="table-body-row">
@@ -224,13 +241,16 @@ const SignNowDocument = () => {
                                                                 onChange={(e) => handleManualStatusChange(doc.id, e.target.value)}
                                                                 className={`status-badge ${statusClass} sn-select-status-override`}
                                                             >
-                                                                {!['completed', 'voided', 'paid', 'declined'].includes(cleanStatus) && (
-                                                                    <option value={cleanStatus}>{cleanStatus.toUpperCase()}</option>
-                                                                )}
-                                                                <option value="completed">COMPLETED</option>
-                                                                <option value="voided">EXPIRED</option>
-                                                                <option value="paid">PAID</option>
+                                                                <option value="unfinished">UNFINISHED</option>
+                                                                <option value="waiting for me">WAITING FOR ME</option>
+                                                                <option value="waiting for others">WAITING FOR OTHERS</option>
+                                                                <option value="signed">SIGNED</option>
+                                                                <option value="pending">PENDING</option>
+                                                                <option value="draft">DRAFT</option>
                                                                 <option value="declined">DECLINED</option>
+                                                                <option value="delivery failed">DELIVERY FAILED</option>
+                                                                <option value="expiring soon">EXPIRING SOON</option>
+                                                                <option value="expired">EXPIRED</option>
                                                             </select>
                                                         ) : (
                                                             <span className={`status-badge ${statusClass}`}>
@@ -297,7 +317,7 @@ const SignNowDocument = () => {
                                         <span className="pd-doc-badge-tag">DOCUMENTS</span>
                                     </div>
                                     <div className="pd-sub-meta-row">
-                                        <span className={`pd-status-dot dot-${activeDocStatus}`} />
+                                        <span className={`pd-status-dot dot-${activeDocStatus.replace(/\s+/g, '-')}`} />
                                         <span className="pd-meta-text-item text-capitalize">{activeDocStatus}</span>
                                         <span className="pd-meta-divider">•</span>
                                         <span className="pd-meta-text-item">{activeDocCurrency} {activeDocValue}</span>

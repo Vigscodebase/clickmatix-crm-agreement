@@ -1,4 +1,4 @@
-import { axios } from "./axios/axiosinstance"
+import { axios } from "./axios/axiosinstance";
 
 class signnowtemplateApi {
 
@@ -19,6 +19,7 @@ class signnowtemplateApi {
     };
 
     static UpdateStatus = (docId, status) => {
+        // Enforce parsing request arguments explicitly inline matching your controller signature expectations
         return axios.post(`signnowdoc/update-status`, { document_id: docId, status });
     };
 
@@ -27,7 +28,7 @@ class signnowtemplateApi {
     };
 
     static DeleteDocument = (docId) => {
-        return axios.get(`signnowdoc/delete-document/${docId}`);
+        return axios.delete(`signnowdoc/delete-document/${docId}`);
     };
 
 }

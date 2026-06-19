@@ -2358,6 +2358,124 @@ body,
     margin-right: 16px;
 }
 
+/* =========================================================================
+   SIGNNOW TEMPLATE MANAGER - CUSTOM MODAL OVERLAY STYLES
+   ========================================================================= */
+
+.sn-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.sn-modal-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: inherit;
+}
+
+.sn-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.sn-modal-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a202c;
+}
+
+.sn-modal-close-icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #718096;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.sn-modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sn-modal-input-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.sn-modal-text-input-field {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e0;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.sn-modal-input-hint-text {
+    margin: 4px 0 0 0;
+    font-size: 12px;
+    color: #a0aec0;
+    line-height: 1.4;
+}
+
+.sn-modal-footer {
+    padding: 12px 20px;
+    background-color: #f7fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.sn-modal-cancel-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e0;
+    background-color: #ffffff;
+    color: #4a5568;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.sn-modal-save-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    background-color: #0066cc;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
 /* RESPONSIVE SUB-BREAKPOINTS */
 @media (max-width: 768px) {
     .agreement-form {
