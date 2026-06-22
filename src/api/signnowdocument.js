@@ -23,6 +23,10 @@ class signnowtemplateApi {
         return axios.post(`signnowdoc/update-status`, { document_id: docId, status });
     };
 
+    static SaveDocumentRecipient = (docId, recipientData) => {
+        return axios.post(`signnowdoc/save-recipient`, { document_id: docId, ...recipientData });
+    };
+
     static DownloadDocumentPdf = (docId) => {
         return axios.get(`signnowdoc/download-document/${docId}`, { responseType: 'blob' });
     };

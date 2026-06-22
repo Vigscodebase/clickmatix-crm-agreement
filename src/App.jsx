@@ -29,7 +29,7 @@ const App = () => {
           </Route>
 
           {/* Highly Restricted Management Tier (Role Enforcement Layer) */}
-          <Route element={<ProtectedRoute allowedRoles={['super_admin', 'admin']} />}>
+          <Route element={<ProtectedRoute allowedRoles={['super_admin']} />}>
             <Route path="/user-management" element={<Usermanagement />} />
           </Route>
 

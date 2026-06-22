@@ -12,7 +12,7 @@ const DashboardLayout = ({ children }) => {
     };
 
     // RBAC validation matching your App.jsx routes tier definitions
-    const hasAdminAccess = user && ['super_admin', 'admin'].includes(user.role);
+    const hasAdminAccess = user && ['super_admin'].includes(user.role);
 
     return (
         <div className={`dashboard-workspace-layout ${isSidebarOpen ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>

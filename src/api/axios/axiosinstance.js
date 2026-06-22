@@ -2,7 +2,7 @@ import Axios from "axios";
 
 // 1. Initialize the base Axios configuration instance
 export const axios = Axios.create({
-    baseURL: "http://192.168.2.63:7000/",
+    baseURL: "http://192.168.2.63:8000/",
     headers: { "Content-Type": "application/json" },
 });
 

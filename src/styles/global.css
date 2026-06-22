@@ -2509,3 +2509,102 @@ body,
         gap: 16px;
     }
 }
+
+/* =========================================================================
+   SIGNNOW DOCUMENT APPROVAL - EXTRACTIONS
+   ========================================================================= */
+.btn-ask-approval {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.sn-approval-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+
+.sn-approval-modal-card {
+    background-color: #ffffff;
+    padding: 24px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 520px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.sn-approval-modal-title {
+    margin: 0 0 16px 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.sn-approval-form-group {
+    margin-bottom: 16px;
+}
+
+.sn-approval-form-group.margin-lg {
+    margin-bottom: 20px;
+}
+
+.sn-approval-form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.sn-approval-form-select,
+.sn-approval-form-input,
+.sn-approval-form-textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    font-size: 0.875rem;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.sn-approval-form-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.sn-approval-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.sn-approval-btn-cancel {
+    padding: 10px 18px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #ffffff;
+    font-size: 0.875rem;
+    cursor: pointer;
+    color: #374151;
+    font-weight: 500;
+}
+
+.sn-approval-btn-submit {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    background-color: #2563eb;
+    color: #ffffff;
+    font-size: 0.875rem;
+    cursor: pointer;
+    font-weight: 500;
+}
