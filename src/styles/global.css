@@ -1409,7 +1409,7 @@ body,
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.15s ease, transform 0.1s ease;
+    transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
 .expired-modal-btn:hover {
@@ -1647,6 +1647,13 @@ body,
     background-color: #fffbeb;
     color: #b45309;
     border: 1px solid #fef3c7;
+}
+
+/* ADDED: Visual Theme Config Rules for dynamically created database Client users */
+.badge-role-client {
+    background-color: #fff1f2;
+    color: #e11d48;
+    border: 1px solid #ffe4e6;
 }
 
 /* --- Control Buttons --- */

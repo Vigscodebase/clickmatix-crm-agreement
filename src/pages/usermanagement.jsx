@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import AuthApi from '../api/auth';
+import RoleApi from '../api/role'; // Imported your RoleApi file here
 import { AlertCircle, CheckCircle, UserPlus, Pencil, Trash2, ArrowLeft } from 'lucide-react';
 
 const UserManagement = () => {
@@ -11,6 +12,7 @@ const UserManagement = () => {
 
     // System Lifecycle States
     const [users, setUsers] = useState([]);
+    const [roles, setRoles] = useState([]); // Dynamic Database Roles State
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -25,7 +27,7 @@ const UserManagement = () => {
         name: '',
         email: '',
         password: '',
-        role: 'sales_manager'
+        role: '' // Kept initial state blank until roles are loaded dynamically
     });
 
     // Extract authorization payload claims locally to verify RBAC system clearance
@@ -50,9 +52,18 @@ const UserManagement = () => {
         }
     }, [token]);
 
+    // Combined initialization effect to load directory context profiles and dynamic roles
     useEffect(() => {
         fetchWorkspaceUsers();
+        fetchAvailableRoles();
     }, []);
+
+    // Fallback handler to ensure form data has a default selection once roles populate
+    useEffect(() => {
+        if (roles.length > 0 && !formData.role) {
+            setFormData(prev => ({ ...prev, role: roles[0].role_slug }));
+        }
+    }, [roles, formData.role]);
 
     const fetchWorkspaceUsers = async () => {
         setLoading(true);
@@ -67,13 +78,29 @@ const UserManagement = () => {
         }
     };
 
+    const fetchAvailableRoles = async () => {
+        try {
+            // Uses your RoleApi tool to grab live database roles
+            const res = await RoleApi.GetRoles();
+            setRoles(res.data?.data || []);
+        } catch (err) {
+            console.error("Dynamic role matrix fetching failed:", err);
+            setError('Failed to securely fetch dynamic authorization roles matrix from backend.');
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const resetFormState = () => {
-        setFormData({ name: '', email: '', password: '', role: 'sales_manager' });
+        setFormData({
+            name: '',
+            email: '',
+            password: '',
+            role: roles.length > 0 ? roles[0].role_slug : ''
+        });
         setSelectedUserId('');
         setError('');
     };
@@ -89,12 +116,10 @@ const UserManagement = () => {
         setError('');
         setSelectedUserId(user.id);
 
-        // Reverse slug assignments to map cleanly into dropdown state fields
-        let mappedRoleSlug = 'sales_manager';
-        const roleCheck = user.role?.toLowerCase();
-        if (roleCheck.includes('super admin') || roleCheck === 'super_admin') mappedRoleSlug = 'super_admin';
-        else if (roleCheck.includes('admin') || roleCheck === 'admin') mappedRoleSlug = 'admin';
-        else if (roleCheck.includes('account') || roleCheck === 'account_manager') mappedRoleSlug = 'account_manager';
+        // Dynamically match user role with fetched database role slugs safely
+        const targetRoleSlug = user.role?.toLowerCase().replace(' ', '_') || '';
+        const isMatched = roles.some(role => role.role_slug === targetRoleSlug);
+        const mappedRoleSlug = isMatched ? targetRoleSlug : (roles[0]?.role_slug || '');
 
         setFormData({
             name: user.name || '',
@@ -228,9 +253,12 @@ const UserManagement = () => {
                                     </thead>
                                     <tbody>
                                         {users.map((user) => {
-                                            // Format raw role inputs neatly for display
-                                            const normalizedRoleStr = user.role || 'sales_manager';
-                                            const cleanRoleLabel = normalizedRoleStr.replace('_', ' ');
+                                            // Format database dynamic roles neatly for visual display
+                                            const normalizedRoleStr = user.role || '';
+                                            const dbMatchedRole = roles.find(r => r.role_slug === normalizedRoleStr);
+
+                                            // Fallback to stylized slug formatting if roles haven't finished fetching yet
+                                            const cleanRoleLabel = dbMatchedRole ? dbMatchedRole.role_name : normalizedRoleStr.replace('_', ' ');
                                             const roleBadgeClassName = `badge-role-${normalizedRoleStr.toLowerCase().replace(' ', '_')}`;
 
                                             return (
@@ -246,8 +274,6 @@ const UserManagement = () => {
                                                             </div>
                                                             <div>
                                                                 <div className="user-display-name">{user.name || 'Unassigned Profile'}</div>
-                                                                {/* ID display commented out to prevent rendering while preserving layout structure */}
-                                                                {/* <span className="metadata-id-tag">ID: {user.id}</span> */}
                                                             </div>
                                                         </div>
                                                     </td>
@@ -267,14 +293,6 @@ const UserManagement = () => {
                                                             >
                                                                 <Pencil size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Edit
                                                             </button>
-                                                            {/* <button
-                                                                type="button"
-                                                                className="btn-action btn-delete-mgmt"
-                                                                disabled={!isAuthorized}
-                                                                onClick={() => handleExecuteDelete(user.id, user.name)}
-                                                            >
-                                                                <Trash2 size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Delete
-                                                            </button> */}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -358,10 +376,11 @@ const UserManagement = () => {
                                         onChange={handleInputChange}
                                         required
                                     >
-                                        <option value="super_admin">Super Admin</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="sales_manager">Sales Manager</option>
-                                        <option value="account_manager">Account Manager</option>
+                                        {roles.map((role) => (
+                                            <option key={role._id || role.role_slug} value={role.role_slug}>
+                                                {role.role_name}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>
